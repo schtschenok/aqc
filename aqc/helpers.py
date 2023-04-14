@@ -81,6 +81,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.peak >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.peak <= maximum
 
@@ -110,7 +111,8 @@ class AudioFile:
 
         if minimum is not None:
             analysis_pass = self.true_peak >= minimum
-
+        
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.true_peak <= maximum
 
@@ -132,6 +134,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.papr >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.papr <= maximum
 
@@ -147,6 +150,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.rms >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.rms <= maximum
 
@@ -186,6 +190,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.lufs >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.lufs <= maximum
 
@@ -198,6 +203,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.length >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.length <= maximum
 
@@ -246,6 +252,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.leading_silence >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.leading_silence <= maximum
 
@@ -264,6 +271,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.trailing_silence >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.trailing_silence <= maximum
 
@@ -282,6 +290,7 @@ class AudioFile:
         if minimum is not None:
             analysis_pass = self.channel_difference >= minimum
 
+        # TODO: Fix a case with undefined minimum but defined maximum
         if maximum is not None:
             analysis_pass = analysis_pass and self.channel_difference <= maximum
 
