@@ -1,0 +1,78 @@
+# To enable an analyzer - just include its name in the config file with square brackets. For example - [true_peak].
+# All parameters are optional. There are two types of parameters - settings and reference values.
+# Settings are prefixed with "settings.", reference values are prefixed with "reference_values.".
+# If any "settings" parameter is unset - the default value specified in the full_config.toml will be used.
+# If any "reference values" parameter is set for the analyzer - this analyzer will start returning the PASS value according to the condition.
+# All minimum/maximum parameters are inclusive of the specified values, for example - maximum peak value of -3 will pass the files with the maximum peak value of exactly -3dB, but not -2.9999dB.
+
+# Peak
+[peak]
+reference_values.maximum = -3  # dB
+reference_values.minimum = -80  # dB
+
+# True Peak
+[true_peak]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -80  # dB
+
+# Peak-to-Average Power ratio in dB, also known as Crest Factor
+[papr]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -80  # dB
+
+# RMS
+[rms]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -12  # dB
+
+# LUFS
+# A modified (non-compliant to BS.1770-4) analysis algorithm will be used for files shorter than 4 seconds
+# Only mono and stereo files are supported due to unclear channel orders in surround files
+[lufs]
+reference_values.maximum = -12  # LUFS
+reference_values.minimum = -28  # LUFS
+
+# File length
+[length]
+reference_values.maximum = 120  # Seconds
+reference_values.minimum = 0.1  # Seconds
+
+# Number of channels
+[channel_count]
+reference_values.equals = [1, 2]  # Either an integer or array of integers
+
+# Sample rate
+[sample_rate]
+reference_values.equals = [48000, 96000]  # Either an integer or array of integers
+
+# Bit depth (subtype)
+[subtype]
+# Allowed values:
+# PCM_S8 - Signed 8 bit data
+# PCM_16 - Signed 16 bit data
+# PCM_24 - Signed 24 bit data
+# PCM_32 - Signed 32 bit data
+# PCM_U8 - Unsigned 8 bit data (WAV and RAW only)
+# FLOAT - 32 bit float data
+# DOUBLE - 64 bit float data
+reference_values.equals = ["PCM_16", "PCM_24", "PCM_32", "FLOAT", "DOUBLE"]  # Either a string or array of strings
+
+# Leading silence
+# Every sample across all the channels at the beginning of the file that's quieter than threshold will be considered silence
+[leading_silence]
+settings.threshold = -60  # dB, defaults to -60dB
+reference_values.maximum = 0.5  # Seconds
+reference_values.minimum = 0  # Seconds
+
+# Leading silence
+# Every sample across all the channels at the end of the file that's quieter than threshold will be considered silence
+[trailing_silence]
+settings.threshold = -60  # dB, defaults to -60dB
+reference_values.maximum = 0.5  # Seconds
+reference_values.minimum = 0  # Seconds
+
+# Channel difference
+# Volume of the difference between the channels
+[channel_difference]
+reference_values.maximum = -3  # dB
+reference_values.minimum = -48  # dB

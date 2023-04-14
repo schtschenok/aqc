@@ -1,0 +1,9 @@
+gooey
+librosa
+soundfile
+numpy
+tomli
+puremagic
+pyloudnorm
+soxr
+loguru
