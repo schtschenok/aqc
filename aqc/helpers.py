@@ -343,6 +343,7 @@ def check_mime_type(file_path: Path) -> bool:
         return False
 
 
+# TODO: Find an offending bool_ and remove this thing
 class CustomJSONSerializer(json.JSONEncoder):
     def default(self, obj):
         return super().encode(bool(obj)) if isinstance(obj, np.bool_) else super().default(obj)
