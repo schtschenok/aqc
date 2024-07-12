@@ -13,6 +13,61 @@ pip install git+https://github.com/schtschenok/aqc.git
 aqc -c /path/to/config.toml -i /path/to/input/folder -o /path/to/output/file.json
 ```
 
+# Example
+This config (`config_examples/test_config.toml`)
+```toml
+# Peak
+[peak]
+reference_values.maximum = -3  # dB
+reference_values.minimum = -80  # dB
+
+# True Peak
+[true_peak]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -80  # dB
+
+# Peak-to-Average Power ratio in dB, also known as Crest Factor
+[papr]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -80  # dB
+
+# RMS
+[rms]
+reference_values.maximum = -1  # dB
+reference_values.minimum = -12  # dB
+```
+can produce this `output.json`
+```json
+{
+    "date": "2024-07-12T17:03:03.707922+04:00",
+    "base_directory": "D:\\Projects\\Python\\Git\\aqc\\test_files",
+    "files": {
+        "short.wav": {
+            "peak": {
+                "pass": "true",
+                "value": -6.000037678251388,
+                "unit": "dB"
+            },
+            "true_peak": {
+                "pass": "true",
+                "value": -3.915757140377444,
+                "unit": "dBTP"
+            },
+            "papr": {
+                "pass": "false",
+                "value": 2.884500243168704,
+                "unit": "dB"
+            },
+            "rms": {
+                "pass": "true",
+                "value": -8.884537921420092,
+                "unit": "dB"
+            }
+        }
+    }
+}
+```
+
 # Analyzers
 
 ## Peak
