@@ -19,22 +19,15 @@ This config (`config_examples/test_config.toml`)
 # Peak
 [peak]
 reference_values.maximum = -3  # dB
-reference_values.minimum = -80  # dB
+reference_values.minimum = -9  # dB
 
 # True Peak
 [true_peak]
 reference_values.maximum = -1  # dB
-reference_values.minimum = -80  # dB
 
 # Peak-to-Average Power ratio in dB, also known as Crest Factor
 [papr]
-reference_values.maximum = -1  # dB
-reference_values.minimum = -80  # dB
-
-# RMS
-[rms]
-reference_values.maximum = -1  # dB
-reference_values.minimum = -12  # dB
+reference_values.minimum = 3  # dB
 ```
 can produce this `output.json`
 ```json
@@ -56,11 +49,6 @@ can produce this `output.json`
             "papr": {
                 "pass": "false",
                 "value": 2.884500243168704,
-                "unit": "dB"
-            },
-            "rms": {
-                "pass": "true",
-                "value": -8.884537921420092,
                 "unit": "dB"
             }
         }
