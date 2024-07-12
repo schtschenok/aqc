@@ -1,4 +1,5 @@
 import inspect
+import json
 from pathlib import Path
 
 import librosa
@@ -7,7 +8,6 @@ import puremagic
 import pyloudnorm as pyln
 import soundfile as sf
 import tomli
-import json
 from loguru import logger
 
 
@@ -65,7 +65,6 @@ class AudioFile:
             if not self.data.size:
                 raise AudioFileError(f"Can't read data from from file {self.path}")
 
-    # That's fucking genius (no)
     def run_analyzer(self, analyzer_name: str, analyzer_params: dict) -> dict:
         analyzer_result = __class__.__dict__.get(f"_analyze_{analyzer_name}")(self, **analyzer_params)
 
@@ -78,12 +77,12 @@ class AudioFile:
         if self.peak is None:
             self.peak = linear_to_db(np.max(self.data))
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.peak <= maximum
+        elif minimum is not None:
             analysis_pass = self.peak >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.peak <= maximum
+        elif maximum is not None:
+            analysis_pass = self.peak <= maximum
 
         return {"pass": analysis_pass, "value": self.peak, "unit": unit}
 
@@ -95,26 +94,26 @@ class AudioFile:
             self.peak = linear_to_db(np.max(self.data))
 
         if self.true_peak is None:
-            target_sample_rate = self.sample_rate * 4 if self.sample_rate <= 96000 else self.sample_rate * 2
+            target_sample_rate = self.sample_rate * 2
             true_peak = 0
             for channel in np.transpose(self.data) if self.data.ndim > 1 else [self.data]:
                 channel_true_peak = np.max(
                     librosa.resample(channel,
                                      orig_sr=self.sample_rate,
                                      target_sr=target_sample_rate,
-                                     res_type="soxr_hq")
+                                     res_type="soxr_mq")
                 )
                 true_peak = channel_true_peak if channel_true_peak > true_peak else true_peak
             self.true_peak = linear_to_db(true_peak)
 
         self.true_peak = np.max([self.true_peak, self.peak])
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.true_peak <= maximum
+        elif minimum is not None:
             analysis_pass = self.true_peak >= minimum
-        
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.true_peak <= maximum
+        elif maximum is not None:
+            analysis_pass = self.true_peak <= maximum
 
         return {"pass": analysis_pass, "value": self.true_peak, "unit": unit}
 
@@ -131,12 +130,12 @@ class AudioFile:
         if self.papr is None:
             self.papr = self.peak - self.rms
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.papr <= maximum
+        elif minimum is not None:
             analysis_pass = self.papr >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.papr <= maximum
+        elif maximum is not None:
+            analysis_pass = self.papr <= maximum
 
         return {"pass": analysis_pass, "value": self.papr, "unit": unit}
 
@@ -147,12 +146,12 @@ class AudioFile:
         if self.rms is None:
             self.rms = linear_to_db(np.sqrt(np.mean(np.square(self.data))) * np.sqrt(2))
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.rms <= maximum
+        elif minimum is not None:
             analysis_pass = self.rms >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.rms <= maximum
+        elif maximum is not None:
+            analysis_pass = self.rms <= maximum
 
         return {"pass": analysis_pass, "value": self.rms, "unit": unit}
 
@@ -187,12 +186,12 @@ class AudioFile:
                     loudness = meter.integrated_loudness(chunk)
                     self.lufs += loudness * (chunk.shape[0] / self.data.shape[0])
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.lufs <= maximum
+        elif minimum is not None:
             analysis_pass = self.lufs >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.lufs <= maximum
+        elif maximum is not None:
+            analysis_pass = self.lufs <= maximum
 
         return {"pass": analysis_pass, "value": self.lufs, "unit": unit}
 
@@ -200,12 +199,12 @@ class AudioFile:
         analysis_pass = None
         unit: str = "Seconds"
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.length <= maximum
+        elif minimum is not None:
             analysis_pass = self.length >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.length <= maximum
+        elif maximum is not None:
+            analysis_pass = self.length <= maximum
 
         return {"pass": analysis_pass, "value": self.length, "unit": unit}
 
@@ -248,13 +247,15 @@ class AudioFile:
                 if np.max(sample) > db_to_linear(threshold):
                     self.leading_silence = index / self.sample_rate
                     break
+            if self.leading_silence is None:
+                self.leading_silence = self.length
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.leading_silence <= maximum
+        elif minimum is not None:
             analysis_pass = self.leading_silence >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.leading_silence <= maximum
+        elif maximum is not None:
+            analysis_pass = self.leading_silence <= maximum
 
         return {"pass": analysis_pass, "value": self.leading_silence, "unit": unit}
 
@@ -267,13 +268,15 @@ class AudioFile:
                 if np.max(sample) > db_to_linear(threshold):
                     self.trailing_silence = index / self.sample_rate
                     break
+            if self.trailing_silence is None:
+                self.trailing_silence = self.length
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.trailing_silence <= maximum
+        elif minimum is not None:
             analysis_pass = self.trailing_silence >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.trailing_silence <= maximum
+        elif maximum is not None:
+            analysis_pass = self.trailing_silence <= maximum
 
         return {"pass": analysis_pass, "value": self.trailing_silence, "unit": unit}
 
@@ -287,12 +290,12 @@ class AudioFile:
         if self.channel_difference is None:
             self.channel_difference = linear_to_db(np.max(np.ptp(self.data, axis=1)))
 
-        if minimum is not None:
+        if minimum is not None and maximum is not None:
+            analysis_pass = minimum <= self.channel_difference <= maximum
+        elif minimum is not None:
             analysis_pass = self.channel_difference >= minimum
-
-        # TODO: Fix a case with undefined minimum but defined maximum
-        if maximum is not None:
-            analysis_pass = analysis_pass and self.channel_difference <= maximum
+        elif maximum is not None:
+            analysis_pass = self.channel_difference <= maximum
 
         return {"pass": analysis_pass, "value": self.channel_difference, "unit": unit}
 
@@ -314,13 +317,16 @@ def analyze_file(file_path: Path, config: dict, parent_directory: Path) -> dict:
     logger.debug(f"Creating AudioFile object for file '{file_path.relative_to(parent_directory)}'")
     audio_file = AudioFile(file_path)
     file_data = {}
+
     for analyzer, params in config.items():
-        reference_values = params.get("reference_values") if params.get("reference_values") else {}
-        settings = params.get("settings") if params.get("settings") else {}
+        reference_values = params.get("reference_values", {})
+        settings = params.get("settings", {})
         kwargs = reference_values | settings
+
         if not AudioFile.check_if_analyzer_exists(analyzer):
             logger.warning(f"Analyzer '{analyzer}' does not exist, it won't be used")
             continue
+
         valid_kwargs = {}
         for parameter in kwargs:
             if AudioFile.check_if_analyzer_parameter_exists(analyzer, parameter):
@@ -343,15 +349,6 @@ def check_mime_type(file_path: Path) -> bool:
         return False
 
 
-# TODO: Find an offending bool_ and remove this thing
 class CustomJSONSerializer(json.JSONEncoder):
     def default(self, obj):
         return super().encode(bool(obj)) if isinstance(obj, np.bool_) else super().default(obj)
-
-
-def return_code(data: dict) -> int:
-    for analyzer in (file_data := data[list(data)[0]]):
-        result = file_data[analyzer]["pass"]
-        if result is not None and not True:
-            return -1
-        return 0

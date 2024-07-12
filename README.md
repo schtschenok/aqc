@@ -3,7 +3,6 @@
 Tool for checking audio files against a set of rules.
 
 # TODO
-* Proper CLI
 * Proper GUI
 * Output formats
 * Docs

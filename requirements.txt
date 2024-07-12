@@ -1,7 +1,6 @@
-gooey
 librosa
 soundfile
-numpy
+numpy < 2
 tomli
 puremagic
 pyloudnorm
