@@ -15,6 +15,5 @@ reference_values.minimum = -80  # dB
 
 # RMS
 [rms]
-settings.window = 300  # Milliseconds, defaults to 300
 reference_values.maximum = -1  # dB
 reference_values.minimum = -12  # dB
