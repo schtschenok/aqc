@@ -313,8 +313,8 @@ def linear_to_db(linear: float) -> float:
     return 20 * np.log10(linear) if linear > 0.0000000001 else -200
 
 
-def analyze_file(file_path: Path, config: dict, parent_directory: Path) -> dict:
-    logger.debug(f"Creating AudioFile object for file '{file_path.relative_to(parent_directory)}'")
+def analyze_file(file_path: Path, config: dict) -> dict:
+    logger.debug(f"Creating AudioFile object for file '{file_path}'")
     audio_file = AudioFile(file_path)
     file_data = {}
 
@@ -341,7 +341,7 @@ def analyze_file(file_path: Path, config: dict, parent_directory: Path) -> dict:
     return file_data
 
 
-def check_mime_type(file_path: Path) -> bool:
+def check_if_mime_type_is_wav(file_path: Path) -> bool:
     allowed_mime_types = ('audio/wav', 'audio/wave', 'audio/x-wav', 'audio/vnd.wave')
     try:
         return puremagic.from_file(file_path, mime=True).lower() in allowed_mime_types

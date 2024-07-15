@@ -1,19 +1,12 @@
 # Peak
 [peak]
 reference_values.maximum = -3  # dB
-reference_values.minimum = -80  # dB
+reference_values.minimum = -9  # dB
 
 # True Peak
 [true_peak]
 reference_values.maximum = -1  # dB
-reference_values.minimum = -80  # dB
 
 # Peak-to-Average Power ratio in dB, also known as Crest Factor
 [papr]
-reference_values.maximum = -1  # dB
-reference_values.minimum = -80  # dB
-
-# RMS
-[rms]
-reference_values.maximum = -1  # dB
-reference_values.minimum = -12  # dB
+reference_values.minimum = 3  # dB'
