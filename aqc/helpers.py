@@ -157,7 +157,7 @@ class AudioFile:
 
     def _analyze_lufs(self, minimum: float = None, maximum: float = None) -> dict:
         analysis_pass = None
-        unit: str = "dB"
+        unit: str = "LUFS"
 
         if self.channel_count not in (1, 2):
             return {"pass": None, "value": None, "unit": unit}
