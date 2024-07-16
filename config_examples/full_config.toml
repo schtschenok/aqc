@@ -24,6 +24,7 @@ reference_values.minimum = -80  # dB
 [rms]
 reference_values.maximum = -1  # dB
 reference_values.minimum = -12  # dB
+settings.threshold = -72  # dB - samples higher than this value will be thrown out during measurement, so silence won't contribute to RMS
 
 # LUFS
 # A modified (non-compliant to BS.1770-4) analysis algorithm will be used for files shorter than 4 seconds
@@ -60,14 +61,14 @@ reference_values.equals = ["PCM_16", "PCM_24", "PCM_32", "FLOAT", "DOUBLE"]  # E
 # Leading silence
 # Every sample across all the channels at the beginning of the file that's quieter than threshold will be considered silence
 [leading_silence]
-settings.threshold = -60  # dB, defaults to -60dB
+settings.threshold = -72  # dB, defaults to -72dB
 reference_values.maximum = 0.5  # Seconds
 reference_values.minimum = 0  # Seconds
 
-# Leading silence
+# Trailing silence
 # Every sample across all the channels at the end of the file that's quieter than threshold will be considered silence
 [trailing_silence]
-settings.threshold = -60  # dB, defaults to -60dB
+settings.threshold = -72  # dB, defaults to -72dB
 reference_values.maximum = 0.5  # Seconds
 reference_values.minimum = 0  # Seconds
 

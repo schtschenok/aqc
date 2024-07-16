@@ -91,7 +91,7 @@ class AudioFile:
         unit: str = "dBTP"
 
         if self.peak is None:
-            self.peak = linear_to_db(np.max(self.data))
+            self._analyze_peak()
 
         if self.true_peak is None:
             target_sample_rate = self.sample_rate * 2
@@ -122,10 +122,9 @@ class AudioFile:
         unit: str = "dB"
 
         if self.rms is None:
-            self.rms = linear_to_db(np.sqrt(np.mean(np.square(self.data))) * np.sqrt(2))
-
+            self._analyze_rms()
         if self.peak is None:
-            self.peak = linear_to_db(np.max(self.data))
+            self._analyze_peak()
 
         if self.papr is None:
             self.papr = self.peak - self.rms
@@ -139,12 +138,14 @@ class AudioFile:
 
         return {"pass": analysis_pass, "value": self.papr, "unit": unit}
 
-    def _analyze_rms(self, minimum: float = None, maximum: float = None) -> dict:
+    def _analyze_rms(self, threshold: float = -72, minimum: float = None, maximum: float = None) -> dict:
         analysis_pass = None
         unit: str = "dB"
 
         if self.rms is None:
-            self.rms = linear_to_db(np.sqrt(np.mean(np.square(self.data))) * np.sqrt(2))
+            self.rms = linear_to_db(
+                np.sqrt(np.mean(np.square(self.data[self.data >= db_to_linear(threshold)]))) * np.sqrt(2)
+            )
 
         if minimum is not None and maximum is not None:
             analysis_pass = minimum <= self.rms <= maximum
@@ -238,7 +239,7 @@ class AudioFile:
 
         return {"pass": analysis_pass, "value": self.subtype, "unit": unit}
 
-    def _analyze_leading_silence(self, threshold: float = -60, minimum: float = None, maximum: float = None) -> dict:
+    def _analyze_leading_silence(self, threshold: float = -72, minimum: float = None, maximum: float = None) -> dict:
         analysis_pass = None
         unit: str = "Seconds"
 
@@ -259,7 +260,7 @@ class AudioFile:
 
         return {"pass": analysis_pass, "value": self.leading_silence, "unit": unit}
 
-    def _analyze_trailing_silence(self, threshold: float = -60, minimum: float = None, maximum: float = None) -> dict:
+    def _analyze_trailing_silence(self, threshold: float = -72, minimum: float = None, maximum: float = None) -> dict:
         analysis_pass = None
         unit: str = "Seconds"
 
