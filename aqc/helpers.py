@@ -144,7 +144,7 @@ class AudioFile:
 
         if self.rms is None:
             self.rms = linear_to_db(
-                np.sqrt(np.mean(np.square(self.data[self.data >= db_to_linear(threshold)]))) * np.sqrt(2)
+                np.sqrt(np.mean(np.square(self.data[np.abs(self.data) >= db_to_linear(threshold)]))) * np.sqrt(2)
             )
 
         if minimum is not None and maximum is not None:
