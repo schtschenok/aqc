@@ -107,6 +107,7 @@ The maximum difference in volume between any two channels in the audio file.
 Unit: dB.
 
 # TODO
+* DC offset analyzer (learned the hard way)
 * Proper GUI (but do we need it?)
 * Output formats
 * Documentation
