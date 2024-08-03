@@ -108,7 +108,11 @@ Unit: dB.
 
 # TODO
 * DC offset analyzer (learned the hard way)
+* Better exclude silence from PAPR calculation
 * Proper GUI (but do we need it?)
 * Output formats
 * Documentation
 * Tests maybe
+
+# Thanks
+The development of this tool has been supported by [Konstantin Knerik Studio](https://www.linkedin.com/company/konstantin-knerik-studio/).
