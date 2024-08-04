@@ -108,6 +108,7 @@ Unit: dB.
 
 # TODO
 * DC offset analyzer (learned the hard way)
+* Detect cut tails at the end of the file
 * Better exclude silence from PAPR calculation
 * Proper GUI (but do we need it?)
 * Output formats
