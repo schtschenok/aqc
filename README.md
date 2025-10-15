@@ -112,6 +112,7 @@ Unit: dB.
 * Better exclude silence from PAPR calculation
 * Proper GUI (but do we need it?)
 * Output formats
+* Bass analyzer
 * Documentation
 * Tests maybe
 
